@@ -1,16 +1,46 @@
 #!/usr/bin/env ruby
 
 require "rubygems"
-require "serialport"
 require "thor"
-require "logger"
 
-require_relative "./coffin"
+require "socket"
 
-serial = SerialPort.new "/dev/cu.usbmodem14101", 9600
-$driver = Coffin::Driver.new(serial, Logger.new(STDOUT))
+socket = UNIXSocket.new('/tmp/coffin.sock')
 
-sleep 3
+class Client
+  def initialize(socket)
+    @socket = socket
+  end
+
+  def down(button)
+    @socket.puts("down")
+    @socket.puts(button)
+  end
+
+  def up(button)
+    @socket.puts("up")
+    @socket.puts(button)
+  end
+
+
+  def press(button)
+    @socket.puts("press")
+    @socket.puts(button)
+  end
+
+  def hold(button, holdtime)
+    @socket.puts("hold")
+    @socket.puts(button)
+    @socket.puts(holdtime)
+  end
+end
+
+$client = Client.new(socket)
+
+at_exit do
+  socket.puts("break")
+  socket.close
+end
 
 class CoffinCLI < Thor
   DEFAULT_HOLD_TIME = 5
@@ -21,42 +51,44 @@ class CoffinCLI < Thor
 
     define_method button do |action|
       case action
+      when "up"
+        $client.up(button)
+      when "down"
+        $client.down(button)
       when "press"
-        $driver.press(button)
+        $client.press(button)
       when "hold"
-        $driver.hold(button, Integer(options[:holdtime] || DEFAULT_HOLD_TIME))
+        $client.hold(button, Integer(options[:holdtime] || DEFAULT_HOLD_TIME))
       end
     end
   end
 
   desc "reboot", "reboot"
   def reboot
-    $driver.down(:power)
-    sleep 0.5
-    $driver.down(:volume_down)
-    sleep 12
-    $driver.up(:power)
-    $driver.up(:volume_down)
+    $client.down(:power)
+    sleep 15
+    $client.up(:power)
   end
 
   desc "fastboot", "fastboot"
   def fastboot
-    $driver.down(:power)
+    usb("plug")
+    $client.down(:power)
     sleep 0.5
-    $driver.down(:volume_down)
+    $client.down(:volume_down)
     sleep 15
-    $driver.up(:power)
-    $driver.up(:volume_down)
+    $client.up(:power)
+    $client.up(:volume_down)
   end
 
 
   desc "screenshot", "screenshot"
   def screenshot
-    $driver.down(:power)
-    $driver.down(:volume_down)
+    $client.down(:power)
+    $client.down(:volume_down)
     sleep 5
-    $driver.up(:power)
-    $driver.up(:volume_down)
+    $client.up(:power)
+    $client.up(:volume_down)
   end
 
 
@@ -65,9 +97,9 @@ class CoffinCLI < Thor
   def usb(action)
     case action
     when "plug"
-      $driver.down(:usb)
+      $client.down(:usb)
     when "unplug"
-      $driver.up(:usb)
+      $client.up(:usb)
     else
       fail
     end
@@ -75,5 +107,5 @@ class CoffinCLI < Thor
 
 end
 
-CoffinCLI.start(gets.chomp)
+CoffinCLI.start(ARGV)
 

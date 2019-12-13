@@ -1,0 +1,50 @@
+#!/usr/bin/env ruby
+
+require "rubygems"
+require "serialport"
+require "thor"
+require "logger"
+require "socket"
+
+require_relative "./coffin"
+
+serial = SerialPort.new "/dev/cu.usbmodem14101", 9600
+$driver = Coffin::Driver.new(serial, Logger.new(STDOUT))
+
+server = UNIXServer.new('/tmp/coffin.sock')
+
+at_exit { server.close }
+
+loop do
+  puts "==== Waiting for connection"
+  client_connection = server.accept
+
+  Thread.start(client_connection) do |connection|
+    loop do
+      command = connection.readline.strip
+
+      case command
+      when "up"
+        button = connection.readline.strip.to_sym
+        $driver.up(button)
+      when "down"
+        button = connection.readline.strip.to_sym
+        $driver.down(button)
+      when "press"
+        button = connection.readline.strip.to_sym
+        $driver.press(button)
+      when "hold"
+        button = connection.readline.strip.to_sym
+        time = connection.readline.strip
+        $driver.hold(button, Integer(time))
+      when "break"
+        break
+      else
+        fail
+      end
+    end
+
+    # connection.close
+  end
+end
+
