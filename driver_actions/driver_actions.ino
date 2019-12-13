@@ -36,6 +36,10 @@ void setup(){
   pinMode(RED, OUTPUT);
   pinMode(GREEN, OUTPUT);
   pinMode (SPEAKER, OUTPUT);
+
+  myservo9.write(usb_unplugged_angle);
+  digitalWrite(RED, HIGH);
+  digitalWrite(GREEN, LOW);
 }
 
 void loop(){
@@ -64,14 +68,16 @@ void loop(){
        myservo6.write(other_pressing_servo);
     } else if (incomingByte == 'g'){ // unplug usb
       arf();
-      analogWrite(RED, 255);
-      analogWrite(GREEN, 0);
+      delay(100);
+      digitalWrite(RED,HIGH);
+      digitalWrite(GREEN, LOW);
+      myservo9.write(usb_unplugged_angle);
     } else if (incomingByte == 'h'){ // plug usb
       arf();
-      analogWrite(RED, 0);
-      analogWrite(GREEN, 255);
-      myservo9.write(usb_plugged_angle);
-      myservo9.write(usb_unplugged_angle);
+      delay(100);
+      digitalWrite(GREEN, HIGH);
+      digitalWrite(RED, LOW);
+      myservo9.write(usb_plugged_angle);      
     }
   }
 }
@@ -134,4 +140,3 @@ void playTone(uint16_t tone1, uint16_t duration) {
      delayMicroseconds(tone1);
   }
 }
-

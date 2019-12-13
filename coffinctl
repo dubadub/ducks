@@ -73,7 +73,7 @@ class CoffinCLI < Thor
     end
   end
 
-
 end
 
-CoffinCLI.start(ARGV)
+CoffinCLI.start(gets.chomp)
+
