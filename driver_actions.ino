@@ -10,6 +10,8 @@ int other_pressing_servo = 30;
 define RED = 2
 define GREEN = 7
 
+int SPEAKER = 8;
+
 Servo myservo3;
 Servo myservo5;
 Servo myservo6;
@@ -30,6 +32,11 @@ void setup(){
 
   myservo9.attach(9);
   myservo9.write(usb_unplugged_angle);// usb unplugged
+
+  pinMode(RED, OUTPUT);
+  pinMode(GREEN, OUTPUT);
+  pinMode(BLUE, OUTPUT);
+  pinMode (SPEAKER, OUTPUT);
 }
 
 void loop(){
