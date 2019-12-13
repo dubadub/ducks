@@ -1,40 +1,43 @@
-require "rubyserial"
+require "null_logger"
 
 class Coffin
   class Driver
 
     COMMANDS = {
       volume_up: {
-        on: "a".freeze,
-        off: "b".freeze,
+        on: "d".freeze,
+        off: "c".freeze,
       },
       volume_down: {
-        on: "c".freeze,
-        off: "d".freeze,
+        on: "f".freeze,
+        off: "e".freeze,
       },
       power: {
-        on: "e".freeze,
-        off: "f".freeze,
+        on: "b",
+        off: "a",
       },
       usb: {
-        on: "g".freeze,
-        off: "h".freeze,
+        on: "h".freeze,
+        off: "g".freeze,
       },
     }
 
     PRESS_DELAY = 1
 
-    def initialize(serial)
+    def initialize(serial, logger = NullLogger.new)
       @serial = serial
+      @logger = logger
     end
 
     def down(button)
+      @logger.debug("down #{button}")
       fail unless COMMANDS[button]
 
       dispatch(COMMANDS[button][:on])
     end
 
     def up(button)
+      @logger.debug("up #{button}")
       fail unless COMMANDS[button]
 
       dispatch(COMMANDS[button][:off])
@@ -57,6 +60,8 @@ class Coffin
     private
 
     def dispatch(command)
+      @logger.debug("Dispatching command to serial: '#{command}'")
+
       @serial.write(command)
     end
   end

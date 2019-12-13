@@ -1,4 +1,6 @@
 source "https://rubygems.org"
 
+gem "ffi"
 gem "thor"
-gem "rubyserial"
+gem "serialport"
+gem "null-logger"

@@ -1,12 +1,19 @@
 require_relative "./coffin"
+require "serialport"
+require "logger"
 
-serial = Serial.new "/dev/cu.usbmodem144201", 9600
+
+serial = SerialPort.new "/dev/cu.usbmodem14101", 9600
 # serial = STDOUT
-driver = Coffin::Driver.new(serial)
+driver = Coffin::Driver.new(serial, Logger.new(STDOUT))
 
-driver.down(:power)
-sleep 1
-driver.up(:power)
+sleep 3
+
+# driver.up(:power)
+# sleep 4
+# driver.down(:power)
 
 driver.press(:power)
-driver.hold(:power, 5)
+# driver.hold(:volume_up, 5)
+
+serial.close

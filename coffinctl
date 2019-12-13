@@ -1,10 +1,16 @@
 #!/usr/bin/env ruby
 
+require "rubygems"
+require "serialport"
 require "thor"
+require "logger"
+
 require_relative "./coffin"
 
-$driver = Coffin::Driver.new(STDOUT)
+serial = SerialPort.new "/dev/cu.usbmodem14101", 9600
+$driver = Coffin::Driver.new(serial, Logger.new(STDOUT))
 
+sleep 3
 
 class CoffinCLI < Thor
   DEFAULT_HOLD_TIME = 5
