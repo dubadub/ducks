@@ -15,7 +15,7 @@ sleep 3
 class CoffinCLI < Thor
   DEFAULT_HOLD_TIME = 5
 
-  %i(power volume_up volume_down usb).each do |button|
+  %i(power volume_up volume_down).each do |button|
     option :holdtime
     desc "#{button} {press|hold} --holdtime=5", "#{button} button"
 
@@ -29,6 +29,49 @@ class CoffinCLI < Thor
     end
   end
 
+  desc "reboot", "reboot"
+  def reboot
+    $driver.down(:power)
+    sleep 0.5
+    $driver.down(:volume_down)
+    sleep 12
+    $driver.up(:power)
+    $driver.up(:volume_down)
+  end
+
+  desc "fastboot", "fastboot"
+  def fastboot
+    $driver.down(:power)
+    sleep 0.5
+    $driver.down(:volume_down)
+    sleep 15
+    $driver.up(:power)
+    $driver.up(:volume_down)
+  end
+
+
+  desc "screenshot", "screenshot"
+  def screenshot
+    $driver.down(:power)
+    $driver.down(:volume_down)
+    sleep 5
+    $driver.up(:power)
+    $driver.up(:volume_down)
+  end
+
+
+  desc "usb", "usb"
+
+  def usb(action)
+    case action
+    when "plug"
+      $driver.down(:usb)
+    when "unplug"
+      $driver.up(:usb)
+    else
+      fail
+    end
+  end
 
 
 end

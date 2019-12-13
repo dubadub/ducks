@@ -22,7 +22,7 @@ class Coffin
       },
     }
 
-    PRESS_DELAY = 1
+    PRESS_DELAY = 0.5
 
     def initialize(serial, logger = NullLogger.new)
       @serial = serial
