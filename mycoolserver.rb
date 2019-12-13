@@ -1,1 +1,4 @@
-require 'sinatra'; get '/cmd' { `./coffinctl #{params.keys.first}` }
+require 'sinatra'
+ get '/cmd' do
+ `./coffinctl #{params.keys.first}` 
+end
