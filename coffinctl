@@ -1,0 +1,30 @@
+#!/usr/bin/env ruby
+
+require "thor"
+require_relative "./coffin"
+
+$driver = Coffin::Driver.new(STDOUT)
+
+
+class CoffinCLI < Thor
+  DEFAULT_HOLD_TIME = 5
+
+  %i(power volume_up volume_down usb).each do |button|
+    option :holdtime
+    desc "#{button} {press|hold} --holdtime=5", "#{button} button"
+
+    define_method button do |action|
+      case action
+      when "press"
+        $driver.press(button)
+      when "hold"
+        $driver.hold(button, Integer(options[:holdtime] || DEFAULT_HOLD_TIME))
+      end
+    end
+  end
+
+
+
+end
+
+CoffinCLI.start(ARGV)
