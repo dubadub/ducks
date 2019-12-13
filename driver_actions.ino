@@ -7,8 +7,8 @@ int pressing_servo = 0;
 int other_resting_servo = 0;
 int other_pressing_servo = 30;
 
-define RED = 2
-define GREEN = 7
+#define RED 2
+#define GREEN 7
 
 int SPEAKER = 8;
 
@@ -35,7 +35,6 @@ void setup(){
 
   pinMode(RED, OUTPUT);
   pinMode(GREEN, OUTPUT);
-  pinMode(BLUE, OUTPUT);
   pinMode (SPEAKER, OUTPUT);
 }
 
